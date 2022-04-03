@@ -1,6 +1,6 @@
 #include <iostream>
-#include "trapezoidal.h"
-#include "shapes.h"
+#include "trapezoidal.hpp"
+#include "shapes.hpp"
 
 using std::cout;
 using std::endl;

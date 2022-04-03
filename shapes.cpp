@@ -1,4 +1,4 @@
-#include "shapes.h"
+#include "shapes.hpp"
 #include <iostream>
 
 using std::string;

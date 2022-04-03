@@ -1,8 +1,10 @@
-CXX = g++
+CPP = g++
 ECHO = echo
 RM = rm -f
 
-CXXFLAGS = -std=c++20 -Wall -Werror -ggdb3 -funroll-loops
+CPPFLAGS = -std=c++20 -Wall -Werror -ggdb3 -funroll-loops
+GTKFLAGS = `pkg-config --cflags --libs gtk4`
+OPENGLFLAGS = `sdl2-config --cflags --libs`
 
 BIN = map
 OBJS = map.o trapezoidal.o
@@ -16,7 +18,7 @@ $(BIN): $(OBJS)
 
 %.o: %.cpp
 	@$(ECHO) Compiling $<
-	@$(CXX) $(CXXFLAGS) -MMD -MF $*.d -c $<
+	@$(CPP) $(CPPFLAGS) $(OPENGLFLAGS) -MMD -MF $*.d -c $<
 
 .PHONY: all clean clobber etags
 
