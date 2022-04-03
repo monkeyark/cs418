@@ -219,7 +219,7 @@
 
 // Draw four triangles on a red background
 #include <GL/glew.h>
-#include <GL/glfw.h>
+#include <GLFW/glfw3.h>
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
