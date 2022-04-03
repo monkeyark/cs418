@@ -20,24 +20,24 @@ class Point
 class LineSegment
 {
 	private:
-		Point p1;
-		Point p2;
+		Point ps;
+		Point pe;
 	public:
 		LineSegment(int x1, int y1, int x2, int y2);
-		LineSegment(const Point & p1, const Point & p2 ) : p1(p1), p2(p2) {}
+		LineSegment(const Point & ps, const Point & pe ) : ps(ps), pe(pe) {}
 
-		void setPoints( const Point & ap1, const Point & ap2)
+		void setPoints(const Point & pstart, const Point & pend)
 		{
-			p1 = ap1;
-			p2 = ap2;
+			ps = pstart;
+			pe = pend;
 		}
 };
 
 class Trapezoid
 {
 	private:
-		LineSegment l1, l2, l3, l4;
+		LineSegment top, bottom, leftp, rightp;
 	public:
 		Trapezoid();
-		Trapezoid(LineSegment l1, LineSegment l2, LineSegment l3, LineSegment l4);
+		Trapezoid(LineSegment top, LineSegment bottom, LineSegment leftp, LineSegment rightp);
 };
