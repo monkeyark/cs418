@@ -7,7 +7,7 @@ GTKFLAGS = `pkg-config --cflags --libs gtk4`
 OPENGLFLAGS = `sdl2-config --cflags --libs`
 
 BIN = map
-OBJS = map.o trapezoidal.o
+OBJS = map.o trapezoidal.o shapes.o
 
 all: $(BIN) etags
 

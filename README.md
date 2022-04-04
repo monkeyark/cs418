@@ -4,6 +4,8 @@
 
 https://en.wikibooks.org/wiki/OpenGL_Programming
 https://solarianprogrammer.com/2013/05/13/opengl-101-drawing-primitives/
+http://glew.sourceforge.net/index.html
+https://gitlab.com/wikibooks-opengl/modern-tutorials/-/tree/master/tut01_intro-sdl2
 
 1. create shape objects: point, line segment, trapezoid
 2. parse DCEL input to point, line segment, trapezoid
