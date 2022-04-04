@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	p2.set(1,0);
 	p3.set(0,1);
 
-	LineSegment l1, l2, l3;
+	HalfEdge l1, l2, l3;
 	l1.set(p1, p2);
 	l2.set(p2, p3);
 	l3.set(p3, p1);
