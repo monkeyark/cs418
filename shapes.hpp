@@ -6,16 +6,22 @@ class Point
 {
 	private:
 		double x, y;
+		int idx;
 	public:
-		Point() : x(0), y(0) {}
-		Point(double x, double y) : x(x), y(y) {}
-		void set(double x, double y);
+		Point() : x(0), y(0), idx(0) {}
+		Point(double x, double y, int idx) : x(x), y(y), idx(idx) {}
+		void set(double x, double y, int idx);
 		double getx();
 		double gety();
+		int getidex();
 		void move(double x, double y);
 		bool equals(Point p);
 		void print();
-		string toString();
+		void toString();
+};
+
+class Face
+{
 };
 
 class HalfEdge
@@ -23,9 +29,10 @@ class HalfEdge
 	private:
 		Point ps;
 		Point pe;
+		int face;
 	public:
 		HalfEdge();
-		HalfEdge(double x1, double y1, double x2, double y2);
+		HalfEdge(double x1, double y1, double x2, double y2, int face);
 		HalfEdge(const Point & ps, const Point & pe ) : ps(ps), pe(pe) {}
 		void set(Point pstart, Point pend);
 		void setDeep(const Point & pstart, const Point & pend);

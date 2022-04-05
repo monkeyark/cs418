@@ -19,3 +19,5 @@ https://gitlab.com/wikibooks-opengl/modern-tutorials/-/tree/master/tut01_intro-s
 1. What is the input format of the DCEL? All need to convert to points and line segment eventually?
 2. Test case?
 3. OpenGL is NOT a library. I has different window manager (glew, glut, SDL) not cross-platform
+4. If the trapezoid is bounded on the left (the right, respectively) by a vertical edge from the input planar subdivision, let leftp (rightp, respectively) denote the lower endpoint of that edge. What is the lower endpoint?
+5. 

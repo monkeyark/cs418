@@ -4,10 +4,11 @@
 using std::string;
 using std::cout;
 
-void Point::set(double x0, double y0)
+void Point::set(double x0, double y0, int index)
 {
 	x = x0;
 	y = y0;
+	idx = index;
 }
 
 double Point::getx()
@@ -18,6 +19,11 @@ double Point::getx()
 double Point::gety()
 {
 	return y;
+}
+
+int Point::getidex()
+{
+	return idx;
 }
 
 void Point::move(double dx, double dy)
@@ -36,29 +42,30 @@ void Point::print()
 	cout << "(" << x << ", " << y << ")";
 }
 
-// string Point::toString()
-// {
-// 	return "(" + x + ", " + y + ")";
-// }
+void Point::toString()
+{
+	cout << "v" << idx << " (" << x << ", " << y << ")";
+}
 
 
 //Line Segment
 HalfEdge::HalfEdge()
 {
-	ps.set(0, 0);
-	pe.set(0, 0);
+	ps.set(0, 0, 0);
+	pe.set(0, 0, 0);
 }
 
-HalfEdge::HalfEdge(double x1, double y1, double x2, double y2)
+HalfEdge::HalfEdge(double x1, double y1, double x2, double y2, int f)
 {
-	ps.set(x1, y1);
-	pe.set(x2, y2);
+	ps.set(x1, y1, 0);
+	pe.set(x2, y2, 0);
 }
 
 void HalfEdge::set(Point pstart, Point pend)
 {
-	ps.set(pstart.getx(), pstart.gety());
-	pe.set(pend.getx(), pend.gety());
+	//TODO
+	ps.set(pstart.getx(), pstart.gety(), pstart.getidex());
+	pe.set(pend.getx(), pend.gety(), pend.getidex());
 }
 
 void HalfEdge::setDeep(const Point & pstart, const Point & pend)

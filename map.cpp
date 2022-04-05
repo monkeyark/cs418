@@ -35,11 +35,11 @@ int main(int argc, char* argv[])
 	// 	cin >> dx >> dy;
 	// }
 
-	Point p = Point(0,0);
+	Point p = Point(0,0,0);
 	Point p1, p2, p3;
-	p1.set(0,0);
-	p2.set(1,0);
-	p3.set(0,1);
+	p1.set(0,0,0);
+	p2.set(1,0,0);
+	p3.set(0,1,0);
 
 	HalfEdge l1, l2, l3;
 	l1.set(p1, p2);
