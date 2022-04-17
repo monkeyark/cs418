@@ -4,12 +4,18 @@
 # import numpy as np
 # import matplotlib.pyplot as plt
 
-from shapes import Vertex, Face, HalfEdge, Trapezoid
+inputFile = "subdivision1.txt"
+f = open(inputFile, "r")
+
+print(f.readlines())
+f.close()
+
+from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
 
 v1 = Vertex(1, 2, 0, 'e1')
 v2 = Vertex(2, 3, 1, 4)
-v1.toString()
-v2.toString()
+# v1.toString()
+# v2.toString()
 
 # N = 60000
 # s = (500, 500)

@@ -7,10 +7,15 @@ class Vertex:
 		self.y = y
 		self.idx = idx
 		self.edge = edge
-
+	
 	def move(self, x:float, y:float):
 		self.x += x
 		self.y += y
+	
+	def equals(self, other):
+		if isinstance(other, Vertex):
+			return self.x == other.x and self.y == other.y
+		return False
 
 	def toString(self):
 		print('v' , self.idx , ' (' , self.x , ', ' , self.y , ')' , ' e' , self.edge)
