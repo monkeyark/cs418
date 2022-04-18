@@ -2,10 +2,12 @@ class HalfEdge:
 	pass
 
 class Vertex:
-	def __init__(self, idx:int, x:float, y:float, edge:HalfEdge):
+	def __init__(self, idx:int, x:float, y:float):
 		self.x = x
 		self.y = y
 		self.idx = idx
+
+	def __call__(self, edge:HalfEdge):
 		self.edge = edge
 	
 	def move(self, x:float, y:float):
@@ -17,61 +19,57 @@ class Vertex:
 			return self.x == other.x and self.y == other.y
 		return False
 
-	def toString(self):
-		print('v' , self.idx , ' (' , self.x , ', ' , self.y , ')' , ' e' , self.edge)
+	def __str__(self):
+		return 'v' + self.idx + ' (' + self.x + ', ' + self.y + ')' + ' e'
 
-#  TODO  need to work on the edge list
 class Face:
-	def __init__(self, idx:int, edgein:HalfEdge, edgeout:HalfEdge):
+	def __init__(self, idx:int):
 		self.idx = idx
-		self.edgein = edgein
+
+	def __call__(self, edgeout:HalfEdge):
 		self.edgeout = edgeout
-	# add edge and delete
-	def toString(self):
-		print('f' , self.idx , ' e' , self.edgein, ' e' , self.edgeout)
+	
+	#TODO edgein should be a list to handle holes
+	def __call__(self, edgein:HalfEdge):
+		self.edgein = edgein
+
+	def __str__(self):
+		return 'f' + self.idx + ' ' + 'e'
 
 class HalfEdge:
-	def __init__(self, ps:Vertex, pe:Vertex, next:HalfEdge, prev:HalfEdge, face:Face):
-		self.ps = ps
-		self.pe = pe
+	def __init__(self, vs:Vertex, ve:Vertex, face:Face):
+		self.vs = vs
+		self.ve = ve
+		self.face = face
+
+	def __call__(self, face:Face):
+		self.face = face
+
+	def __call__(self, next:HalfEdge, prev:HalfEdge):
 		self.next = next
 		self.prev = prev
-		self.face = face #TODO add the traversal list
 
-	def __init__(self, psx:float, psy:float, psidx:int, pex:float, pey:float, peidx:int, face:Face):
-		self.ps = Vertex(psx, psy, psidx)
-		self.pe = Vertex(pex, pey, peidx)
-		self.face = face
+	# def __call__(self, psx:float, psy:float, psidx:int, pex:float, pey:float, peidx:int, face:Face):
+	# 	self.ps = Vertex(psx, psy, psidx)
+	# 	self.pe = Vertex(pex, pey, peidx)
+	# 	self.face = face
 	
 	def twin(self):
-		twin = HalfEdge(self.pe, self.ps, self.prev, self.next, self.face.edgeout.face)
+		twin = HalfEdge(self.ve, self.vs, self.prev, self.next, self.face.edgeout.face)
 		return twin
 
-	def set(self, ps:Vertex, pe:Vertex):
-		self.ps = ps
-		self.pe = pe
+	def set(self, vs:Vertex, ve:Vertex):
+		self.vs = vs
+		self.ve = ve
+
 	# def equals(self, edge:HalfEdge):
 
-	def toString(self):
-		print('e' , self.ps.x , )
+	def __str__(self):
+		return 'e' + self.vs.idx + ',' + self.ve.idx
+
 
 class DCEL:
 	pass
-
-# v1 (0, 0) e1,2
-# v2 (1, 0) e2,3
-# v3 (0, 1) e3,1
-
-# f1 e2,3 nil
-# f2 nil e1,3
-
-# e1,2 v1 e2,1 f1 e2,3 e3,1
-# e2,1 v2 e1,2 f2 e1,3 e3,2
-# e1,3 v1 e3,1 f2 e3,2 e2,1
-# e3,1 v3 e1,3 f1 e1,2 e2,3
-# e2,3 v2 e3,2 f1 e3,1 e1,2
-# e3,2 v3 e2,3 f2 e2,1 e1,3
-
 
 # class Trapezoid:
 # 	# starting counterclockwise at the upper left corner top, right, bot, left

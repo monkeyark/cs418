@@ -1,10 +1,5 @@
-# from PIL import Image
-# from PIL import ImageDraw
-# import random as rnd
-# import numpy as np
-# import matplotlib.pyplot as plt
 
-inputFile = "subdivision1.txt"
+inputFile = "data/subdivision1.txt"
 f = open(inputFile, "r")
 
 print(f.readlines())
@@ -16,6 +11,13 @@ v1 = Vertex(1, 2, 0, 'e1')
 v2 = Vertex(2, 3, 1, 4)
 # v1.toString()
 # v2.toString()
+
+
+# from PIL import Image
+# from PIL import ImageDraw
+# import random as rnd
+# import matplotlib.pyplot as plt
+# import numpy as np
 
 # N = 60000
 # s = (500, 500)
