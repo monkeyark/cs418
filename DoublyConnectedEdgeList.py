@@ -2,7 +2,7 @@ class HalfEdge:
 	pass
 
 class Vertex:
-	def __init__(self, idx:int, x:float, y:float):
+	def __init__(self, idx, x, y):
 		self.x = x
 		self.y = y
 		self.idx = idx
@@ -10,7 +10,7 @@ class Vertex:
 	def __call__(self, edge:HalfEdge):
 		self.edge = edge
 	
-	def move(self, x:float, y:float):
+	def move(self, x, y):
 		self.x += x
 		self.y += y
 	
@@ -20,10 +20,13 @@ class Vertex:
 		return False
 
 	def __str__(self):
-		return 'v' + self.idx + ' (' + self.x + ', ' + self.y + ')' + ' e'
+		
+		return 'v' + str(self.idx) + ' (' + str(self.x) + ', ' + str(self.y) + ')' + ' e'
+		# return ('v' , self.idx , ' (' + self.x , ', ' , self.y , ')' , ' e')
+
 
 class Face:
-	def __init__(self, idx:int):
+	def __init__(self, idx):
 		self.idx = idx
 
 	def __call__(self, edgeout:HalfEdge):
@@ -42,8 +45,10 @@ class HalfEdge:
 		self.ve = ve
 		self.face = face
 
-	def __call__(self, face:Face):
-		self.face = face
+	# def __call__(self, vs:Vertex, ve:Vertex, face:Face):
+	# 	self.vs = vs
+	# 	self.ve = ve
+	# 	self.face = face
 
 	def __call__(self, next:HalfEdge, prev:HalfEdge):
 		self.next = next
