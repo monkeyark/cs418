@@ -1,3 +1,6 @@
+### ###
+*.png
+
 ### VisualStudioCode ###
 .vscode/
 .vscode/*
