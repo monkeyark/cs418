@@ -3,9 +3,9 @@ class HalfEdge:
 
 class Vertex:
 	def __init__(self, idx, x, y):
-		self.x = x
-		self.y = y
-		self.idx = idx
+		self.idx = int(idx)
+		self.x = float(x)
+		self.y = float(y)
 
 	def __call__(self, edge:HalfEdge):
 		self.edge = edge
@@ -27,7 +27,7 @@ class Vertex:
 
 class Face:
 	def __init__(self, idx):
-		self.idx = idx
+		self.idx = int(idx)
 
 	def __call__(self, edgeout:HalfEdge):
 		self.edgeout = edgeout
@@ -37,7 +37,7 @@ class Face:
 		self.edgein = edgein
 
 	def __str__(self):
-		return 'f' + self.idx + ' ' + 'e'
+		return 'f' + str(self.idx) + ' e'
 
 class HalfEdge:
 	def __init__(self, vs:Vertex, ve:Vertex, face:Face):
@@ -70,7 +70,7 @@ class HalfEdge:
 	# def equals(self, edge:HalfEdge):
 
 	def __str__(self):
-		return 'e' + self.vs.idx + ',' + self.ve.idx
+		return 'e' + str(self.vs.idx) + ',' + str(self.ve.idx)
 
 
 class DCEL:
