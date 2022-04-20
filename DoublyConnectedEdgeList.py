@@ -1,4 +1,4 @@
-from DirectedAcyclicGraph import Point, LineSegment
+from TrapezoidalMap import Point, LineSegment
 
 class HalfEdge:
 	pass
@@ -69,13 +69,19 @@ class HalfEdge:
 		return twin
 	
 	def leftPt(self):
-		if (self.vsx <= self.vex):
+		if self.vsx < self.vex:
 			return Point(self.vsx, self.vsy)
+		elif self.vsx == self.vex:
+			if self.vsy <= self.vey:
+				return Point(self.vsx, self.vsy)
 		return Point(self.vex, self.vey)
 
 	def rightPt(self):
-		if (self.vsx <= self.vex):
+		if self.vsx < self.vex:
 			return Point(self.vex, self.vey)
+		elif self.vsx == self.vex:
+			if self.vsy <= self.vey:
+				return Point(self.vex, self.vey)
 		return Point(self.vsx, self.vsy)
 	
 	def toLineSegment(self):	
