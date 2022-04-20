@@ -1,3 +1,5 @@
+from DirectedAcyclicGraph import Point, LineSegment
+
 class HalfEdge:
 	pass
 
@@ -42,6 +44,10 @@ class HalfEdge:
 	def __init__(self, vs:Vertex, ve:Vertex, face:Face):
 		self.vs = vs
 		self.ve = ve
+		self.vsx = vs.x
+		self.vsy = vs.y
+		self.vex = ve.x
+		self.vey = ve.y
 		self.face = face
 
 	# def __call__(self, vs:Vertex, ve:Vertex, face:Face):
@@ -61,6 +67,22 @@ class HalfEdge:
 	def twin(self):
 		twin = HalfEdge(self.ve, self.vs, self.prev, self.next, self.face.edgeout.face)
 		return twin
+	
+	def leftPt(self):
+		if (self.vsx <= self.vex):
+			return Point(self.vsx, self.vsy)
+		return Point(self.vex, self.vey)
+
+	def rightPt(self):
+		if (self.vsx <= self.vex):
+			return Point(self.vex, self.vey)
+		return Point(self.vsx, self.vsy)
+	
+	def toLineSegment(self):	
+		lp = self.leftPt()
+		rp = self.rightPt()
+		seg = LineSegment(lp, rp)
+		return seg
 
 	def set(self, vs:Vertex, ve:Vertex):
 		self.vs = vs
