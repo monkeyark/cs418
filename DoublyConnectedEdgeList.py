@@ -20,7 +20,6 @@ class Vertex:
 		return False
 
 	def __str__(self):
-		
 		return 'v' + str(self.idx) + ' (' + str(self.x) + ', ' + str(self.y) + ')' + ' e'
 		# return ('v' , self.idx , ' (' + self.x , ', ' , self.y , ')' , ' e')
 

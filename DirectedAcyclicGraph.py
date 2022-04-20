@@ -1,7 +1,7 @@
 # Algorithm TRAPEZOIDALMAP(S)
 # Input. A set S of n non-crossing line segments.
 # Output. The trapezoidal map T(S) and a search structure D for T(S) in a bounding box.
-# 1. Determine a bounding box R that contains all segments of S, and initialize the trapezoidal map structure T and search structure D for it.
+# 1. Determine a bounding box R that containims all segments of S, and initialize the trapezoidal map structure T and search structure D for it.
 # 2. Compute a random permutation s1,s2,...,sn of the elements of S.
 # 3. for i ← 1 to n
 # 4. do Find the set ∆0,∆1,...,∆k of trapezoids in T properly intersected by si.
@@ -29,3 +29,19 @@
 # 1. for k ← n downto 2
 # 2. do rndindex ←RANDOM(k)
 # 3. Exchange A[k] and A[rndindex].
+
+class Point:
+	def __init__(self, x, y):
+		self.x = float(x)
+		self.y = float(y)
+
+	def __str__(self):
+		return 'p (' + str(self.x) + ', ' + str(self.y) + ')'
+
+class LineSegment:
+	def __init__(self, pl:Point, pr:Point):
+		self.pl = pl
+		self.pr = pr
+
+	def __str__(self):
+		return str(self.pl) + ' ' + str(self.pr)
