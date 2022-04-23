@@ -1,5 +1,7 @@
 import re
 from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
+from TrapezoidalMap import Point, LineSegment
+from operator import attrgetter
 
 vertex = []
 face = []
@@ -19,32 +21,24 @@ def readFile(inputFile):
 
 	parseSubDivision(input)
 
-	# the face outside bounding box
-	face_out = Face(str(len(face)))
-	# bounding vertice
-	min_x = min(x_values)
-	max_x = max(x_values)
-	min_y = min(y_values)
-	max_y = max(y_values)
-	offset_x = (max_x - min_x) * 0.2
-	offset_y = (max_y - min_y) * 0.2
-	topl = Vertex(len(vertex)+1, min_x-offset_x, max_y+offset_y)
-	topr = Vertex(len(vertex)+2, max_x+offset_x, max_y+offset_y)
-	botr = Vertex(len(vertex)+3, max_x+offset_x, min_y-offset_y)
-	botl = Vertex(len(vertex)+4, min_x-offset_x, min_y-offset_y)
+	segment_halfEdge_dict(seg_edg_dict)
+	removeDupSegment(segment)
+	# segment.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
+	addBoundingBox(segment)
+	sortSegment(segment)
 
-	# bounding edges
-	boundT = HalfEdge(topl, topr, face_out)
-	boundR = HalfEdge(topr, botr, face_out)
-	boundB = HalfEdge(botr, botl, face_out)
-	boundL = HalfEdge(botl, topl, face_out)
+def removeDupSegment(seg):
+	seen = set()
+	result = []
+	for item in seg:
+		if item not in seen:
+			seen.add(item)
+			result.append(item)
+	segment[:] = result
 
-	halfedge[len(halfedge):] = [boundT, boundR, boundB, boundL]
-
-	segment_halfEdge_dict()
-	print('dictionary in parse', seg_edg_dict)
-	# getSegment()
-	segment.append([*seg_edg_dict])
+def sortSegment(seg):
+	# segment.sort(key = lambda x: (x.plx, x.ply, x.prx, x.pry))
+	segment.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
 
 
 def readVertex(line):
@@ -96,9 +90,31 @@ def add_values_to_dict(target_dict, key, list_of_values):
 	target_dict[key].extend(list_of_values)
 	return target_dict
 
-def segment_halfEdge_dict():
+def segment_halfEdge_dict(s_e_dict):
 	for edge in halfedge:
 		seg = edge.toLineSegment()
 		seg_ = seg.__str__()
 		edg_ = edge.__str__()
-		add_values_to_dict(seg_edg_dict, seg_, [edg_])
+		segment.append(seg)	#add element to segemtns list
+		add_values_to_dict(s_e_dict, seg_, [edg_])
+
+def addBoundingBox(seg):
+	# bounding points
+	min_x = min(x_values)
+	max_x = max(x_values)
+	min_y = min(y_values)
+	max_y = max(y_values)
+	offset_x = (max_x - min_x) * 0.2
+	offset_y = (max_y - min_y) * 0.2
+	topl = Point(min_x-offset_x, max_y+offset_y)
+	topr = Point(max_x+offset_x, max_y+offset_y)
+	botr = Point(max_x+offset_x, min_y-offset_y)
+	botl = Point(min_x-offset_x, min_y-offset_y)
+	# bounding line segments
+	boundT = LineSegment(topl, topr)
+	boundR = LineSegment(topr, botr)
+	boundB = LineSegment(botr, botl)
+	boundL = LineSegment(botl, topl)
+	# add bounding line segments to segments list
+	# seg[len(seg):] = [boundT, boundR, boundB, boundL]
+	seg[len(seg):] = [boundB, boundL, boundT, boundR]
