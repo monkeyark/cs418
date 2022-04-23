@@ -2,6 +2,7 @@ import re
 from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
 from TrapezoidalMap import Point, LineSegment
 from operator import attrgetter
+import random
 
 vertex = []
 face = []
@@ -23,9 +24,16 @@ def readFile(inputFile):
 
 	segment_halfEdge_dict(seg_edg_dict)
 	removeDupSegment(segment)
-	# segment.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
-	addBoundingBox(segment)
 	sortSegment(segment)
+	randomSegment(segment)
+	addBoundingBox(segment)
+
+def randomSegment(seg):
+	rand_segment[:] = seg[::]
+	# random.shuffle(rand_segment)
+	for i in range(len(seg)-1, 1, -1):
+		rndIdx = random.randint(0, i)
+		rand_segment[i], rand_segment[rndIdx] = rand_segment[rndIdx], rand_segment[i]
 
 def removeDupSegment(seg):
 	seen = set()
