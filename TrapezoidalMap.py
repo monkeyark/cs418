@@ -16,6 +16,12 @@ class Point:
 	def __str__(self):
 		return '(' + str(self.x) + ', ' + str(self.y) + ')'
 
+	def __eq__(self, other):
+		return self.x == other.x and self.y == other.y
+
+	def __hash__(self):
+		return hash(('x', self.x, 'y', self.y))
+
 class LineSegment:
 	def __init__(self, pl:Point, pr:Point):
 		self.pl = pl
@@ -32,6 +38,13 @@ class LineSegment:
 
 	def __str__(self):
 		return str(self.pl) + ' ' + str(self.pr)
+
+	def __eq__(self, other):
+		return self.pl == other.pl and self.pr == other.pr
+
+	def __hash__(self):
+		return hash(('left endpoint', self.pl, 'right endpoint', self.pr))
+
 
 class Trapezoid:
 	pass
