@@ -22,11 +22,3 @@
 # 8. j ← j +1
 # 9. return ∆0,∆1,...,∆j
 
-
-# Algorithm RANDOMPERMUTATION(A)
-# Input. An array A[1···n].
-# Output. The array A[1···n] with the same elements, but rearranged into a random permutation.
-# 1. for k ← n downto 2
-# 2. do rndindex ←RANDOM(k)
-# 3. Exchange A[k] and A[rndindex].
-
