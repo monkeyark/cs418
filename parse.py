@@ -19,18 +19,21 @@ def readFile(inputFile):
 	file = open(inputFile, "r")
 	input = file.readlines()
 	file.close()
-
 	parseSubDivision(input)
-
 	segment_halfEdge_dict(seg_edg_dict)
 	removeDupSegment(segment)
 	sortSegment(segment)
 	randomSegment(segment)
 	addBoundingBox(segment)
 
+# Algorithm RANDOMPERMUTATION(A)
+# Input. An array A[1···n].
+# Output. The array A[1···n] with the same elements, but rearranged into a random permutation.
+# 1. for k ← n downto 2
+# 2. 	do rndindex ←RANDOM(k)
+# 3. 	Exchange A[k] and A[rndindex].
 def randomSegment(seg):
 	rand_segment[:] = seg[::]
-	# random.shuffle(rand_segment)
 	for i in range(len(seg)-1, 1, -1):
 		rndIdx = random.randint(0, i)
 		rand_segment[i], rand_segment[rndIdx] = rand_segment[rndIdx], rand_segment[i]
@@ -47,7 +50,6 @@ def removeDupSegment(seg):
 def sortSegment(seg):
 	# segment.sort(key = lambda x: (x.plx, x.ply, x.prx, x.pry))
 	segment.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
-
 
 def readVertex(line):
 	idx = re.search('v(.+?) ', line).group(1)
@@ -68,7 +70,6 @@ def readHalfEdge(line):
 	vsi = re.search('e(\d),\d v', line).group(1)
 	vei = re.search('e\d,(\d) v', line).group(1)
 	fi = re.search('f(\d) ', line).group(1)
-
 	vs = vertex[int(vsi)-1]
 	ve = vertex[int(vei)-1]
 	f = face[int(fi)-1]
@@ -126,3 +127,4 @@ def addBoundingBox(seg):
 	# add bounding line segments to segments list
 	# seg[len(seg):] = [boundT, boundR, boundB, boundL]
 	seg[len(seg):] = [boundB, boundL, boundT, boundR]
+
