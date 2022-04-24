@@ -21,4 +21,29 @@
 # 7. else Let ∆j+1 be the upper right neighbor of ∆j.
 # 8. j ← j +1
 # 9. return ∆0,∆1,...,∆j
+class Node:
+	def __init__(self):
+		pass
 
+from collections import OrderedDict
+class DirectedAcyclicGraph:
+	def __init__(self):
+		self.graph = OrderedDict()
+
+	def add_node(self, node_name, graph=None):
+		if not graph:
+			graph = self.graph
+		if node_name in graph:
+			raise KeyError('node %s already exists' % node_name)
+		graph[node_name] = set()
+
+	def delete_node(self, node_name, graph=None):
+		if not graph:
+			graph = self.graph
+		if node_name not in graph:
+			raise KeyError('node %s does not exist' % node_name)
+		graph.pop(node_name)
+
+		for node, edges in graph.items:
+			if node_name in edges:
+				edges.remove(node_name)

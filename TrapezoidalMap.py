@@ -47,7 +47,18 @@ class LineSegment:
 
 
 class Trapezoid:
-	pass
+	def __init__(self, top:LineSegment, bot:LineSegment, right:LineSegment, left:LineSegment):
+		self.top = top
+		self.bot = bot
+		self.right = right
+		self.left = left
+
+	def __eq__(self, other):
+		return self.top == other.top and self.bot == other.bot and \
+				self.right == other.right and self.left == other.left
+
+	def __hash__(self):
+		return hash(('top', self.top, 'bot ', self.bot, 'right ', self.right, 'left ', self.left))
 
 
 class TrapezoidMap:
