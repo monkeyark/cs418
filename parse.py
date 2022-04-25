@@ -52,8 +52,8 @@ def vertical_segment(vtx, seg, segv):
 		pt = v.to_point()
 		x = pt.x
 		y = pt.y
-		pt_to_top = max(vertex_y) - y	#positive
-		pt_to_bot = min(vertex_y) - y	#negative
+		dist_top = abs(bound_box[3].pry - y)	#distance to top
+		dist_bot = abs(bound_box[3].ply - y)	#distance to bot
 		for s in seg:
 			if s.plx - s.prx == 0: continue	#handle vertical line
 			'''find intersection of vertical line of current point with each line segment
@@ -64,25 +64,24 @@ def vertical_segment(vtx, seg, segv):
 			y2 = s.pry
 			y_on_s = y1 + ((y2-y1)/(x2-x1)) * (x-x1)
 
-			pt_to_top = max(vertex_y)
-			pt_to_bot = min(vertex_y)
-			if y_on_s - y > 0  and (y_on_s - y) < (pt_to_top - y):
-				pt_to_top = y_on_s
-			elif y_on_s - y < 0  and (y_on_s - y) > (pt_to_bot - y):
-				pt_to_bot = y_on_s
-		
-		p_top = Point(x, pt_to_top)
+			if y_on_s > y and abs(y_on_s - y) < dist_top and x1 < x < x2:
+				dist_top = abs(y_on_s - y)
+			elif y_on_s < y and abs(y_on_s - y) < dist_bot and x1 < x < x2:
+				dist_bot = abs(y_on_s - y)
+
+		p_top = Point(x, y + dist_top)
 		p_top.set_idx(len(point))
+		point.append(p_top)
 		s_top = LineSegment(pt, p_top)
 		s_top.set_idx(pt.idx, p_top.idx)
-		point.append(p_top)
 		segv.append(s_top)
-		p_bot = Point(x, pt_to_bot)
+		p_bot = Point(x, y - dist_bot)
 		p_bot.set_idx(len(point))
+		point.append(p_bot)
 		s_bot = LineSegment(p_bot, pt)
 		s_bot.set_idx(pt.idx, p_bot.idx)
-		point.append(p_bot)
 		segv.append(s_bot)
+		print(p_top, p_bot)
 
 # Algorithm RANDOMPERMUTATION(A)
 # Input. An array A[1···n].
