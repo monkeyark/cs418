@@ -66,9 +66,9 @@ def vertical_segment(vtx, seg, segv):
 
 			pt_to_top = max(vertex_y)
 			pt_to_bot = min(vertex_y)
-			if y_on_s - y > 0  and y_on_s < pt_to_top:
+			if y_on_s - y > 0  and (y_on_s - y) < (pt_to_top - y):
 				pt_to_top = y_on_s
-			elif y_on_s - y < 0  and y_on_s > pt_to_bot:
+			elif y_on_s - y < 0  and (y_on_s - y) > (pt_to_bot - y):
 				pt_to_bot = y_on_s
 		
 		p_top = Point(x, pt_to_top)
