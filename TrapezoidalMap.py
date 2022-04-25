@@ -2,6 +2,16 @@ class Point:
 	def __init__(self, x, y):
 		self.x = float(x)
 		self.y = float(y)
+		self.idx = None
+		
+	# def __init__(self, x, y, idx=None, **kwargs):
+	# 	self.x = float(x)
+	# 	self.y = float(y)
+	# 	if idx:
+	# 		self.idx = idx
+	# 	else:
+	# 		self.idx = None
+	# 	self.update(kwargs)
 
 	def equals(self, other):
 		if (self.__class__ == other.__class__):
@@ -12,6 +22,9 @@ class Point:
 		if (isinstance(other, Point)):
 			return self.x == other.x and self.y == other.y
 		return False
+
+	def set_idx(self, idx):
+		self.idx = idx
 
 	def __str__(self):
 		return '(' + str(self.x) + ', ' + str(self.y) + ')'
@@ -30,20 +43,26 @@ class LineSegment:
 		self.ply = pl.y
 		self.prx = pr.x
 		self.pry = pr.y
+		self.idx = None
 
-	def equals(self, other):
-		if (self.__class__ == other.__class__):
-			return self.pl.equals(other.pl) and self.pr.equals(other.pr)
-		return False
+	def set_idx(self, sidx, eidx):
+		if sidx < eidx:
+			self.idx = str(sidx) + ',' + str(eidx)
+		else:
+			self.idx = str(eidx) + ',' + str(sidx)
+
+	def print_endpoints(self):
+		return str(self.pl) + ' ' + str(self.pr)
 
 	def __str__(self):
-		return str(self.pl) + ' ' + str(self.pr)
+		return 's' + self.idx
 
 	def __eq__(self, other):
 		return self.pl == other.pl and self.pr == other.pr
 
 	def __hash__(self):
 		return hash(('left endpoint', self.pl, 'right endpoint', self.pr))
+
 
 
 class Trapezoid:

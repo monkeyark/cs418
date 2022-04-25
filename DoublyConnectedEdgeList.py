@@ -16,6 +16,11 @@ class Vertex:
 		self.x += x
 		self.y += y
 	
+	def to_point(self):
+		pt = Point(self.x, self.y)
+		pt.set_idx(self.idx)
+		return pt
+
 	def equals(self, other):
 		if isinstance(other, Vertex):
 			return self.x == other.x and self.y == other.y
@@ -23,7 +28,6 @@ class Vertex:
 
 	def __str__(self):
 		return 'v' + str(self.idx) + ' (' + str(self.x) + ', ' + str(self.y) + ')' + ' e'
-		# return ('v' , self.idx , ' (' + self.x , ', ' , self.y , ')' , ' e')
 
 
 class Face:
@@ -50,51 +54,48 @@ class HalfEdge:
 		self.vey = ve.y
 		self.face = face
 
-	# def __call__(self, vs:Vertex, ve:Vertex, face:Face):
-	# 	self.vs = vs
-	# 	self.ve = ve
-	# 	self.face = face
-
 	def __call__(self, next:HalfEdge, prev:HalfEdge):
 		self.next = next
 		self.prev = prev
-
-	# def __call__(self, psx:float, psy:float, psidx:int, pex:float, pey:float, peidx:int, face:Face):
-	# 	self.ps = Vertex(psx, psy, psidx)
-	# 	self.pe = Vertex(pex, pey, peidx)
-	# 	self.face = face
 	
 	def twin(self):
 		twin = HalfEdge(self.ve, self.vs, self.prev, self.next, self.face.edgeout.face)
 		return twin
 	
-	def leftPt(self):
+	def left_pt(self):
+		pt = Point(self.vex, self.vey)
+		pt.set_idx(self.ve.idx)
 		if self.vsx < self.vex:
-			return Point(self.vsx, self.vsy)
+			pt = Point(self.vsx, self.vsy)
+			pt.set_idx(self.vs.idx)
 		elif self.vsx == self.vex:
 			if self.vsy <= self.vey:
-				return Point(self.vsx, self.vsy)
-		return Point(self.vex, self.vey)
+				pt = Point(self.vsx, self.vsy)
+				pt.set_idx(self.vs.idx)
+		return pt
+		
+	def right_pt(self):
+		pt = Point(self.vsx, self.vsy)
+		pt.set_idx(self.vs.idx)
+		if self.vsx < self.vex:
+			pt = Point(self.vex, self.vey)
+			pt.set_idx(self.ve.idx)
+		elif self.vsx == self.vex:
+			if self.vsy <= self.vey:
+				pt = Point(self.vex, self.vey)
+				pt.set_idx(self.ve.idx)
+		return pt
 
-	def rightPt(self):
-		if self.vsx < self.vex:
-			return Point(self.vex, self.vey)
-		elif self.vsx == self.vex:
-			if self.vsy <= self.vey:
-				return Point(self.vex, self.vey)
-		return Point(self.vsx, self.vsy)
-	
-	def toLineSegment(self):	
-		lp = self.leftPt()
-		rp = self.rightPt()
+	def to_line_segment(self):
+		lp = self.left_pt()
+		rp = self.right_pt()
 		seg = LineSegment(lp, rp)
+		seg.set_idx(self.vs.idx, self.ve.idx)
 		return seg
 
 	def set(self, vs:Vertex, ve:Vertex):
 		self.vs = vs
 		self.ve = ve
-
-	# def equals(self, edge:HalfEdge):
 
 	def __str__(self):
 		return 'e' + str(self.vs.idx) + ',' + str(self.ve.idx)
