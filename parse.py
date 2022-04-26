@@ -31,7 +31,7 @@ def read_file(inputFile):
 	sort_line_segment(segment)
 	randomize_line_segment(segment)
 	bounding_box(bound_box)
-	vertical_segment(vertex, segment, vert_segment)
+	find_vertical_segment(vertex, segment, vert_segment)
 	point_coord(point)
 
 '''find x,y coordinates of vertex for ploting'''
@@ -47,48 +47,52 @@ def point_coord(pt):
 		point_x.append(float(p.x))
 		point_y.append(float(p.y))
 
-def vertical_segment(vtx, seg, segv):
+def find_vertical_segment(vtx, seg, segv):
 	for v in vtx:
 		pt = v.to_point()
-		x = pt.x
-		y = pt.y
-		dist_top = abs(bound_box[3].pry - y)	#distance to top
-		dist_bot = abs(bound_box[3].ply - y)	#distance to bot
-		for s in seg:
-			if s.plx - s.prx == 0: continue	#handle vertical line
-			'''find intersection of vertical line of current point with each line segment
-			two point form of line: y-y1 = (y2-y1)/(x2-x1) * (x-x1)'''
-			x1 = s.plx
-			y1 = s.ply
-			x2 = s.prx
-			y2 = s.pry
-			y_on_s = y1 + ((y2-y1)/(x2-x1)) * (x-x1)
+		vertical_segment(pt, seg, segv)
 
-			if y_on_s > y and abs(y_on_s - y) < dist_top and x1 < x < x2:
-				dist_top = abs(y_on_s - y)
-			elif y_on_s < y and abs(y_on_s - y) < dist_bot and x1 < x < x2:
-				dist_bot = abs(y_on_s - y)
+def vertical_segment(pt, seg, segv):
+	x = pt.x
+	y = pt.y
+	dist_top = abs(bound_box[3].pry - y)	#distance to top
+	dist_bot = abs(bound_box[3].ply - y)	#distance to bot
+	for s in seg:
+		if s.plx - s.prx == 0: continue	#handle vertical line
+		'''find intersection of vertical line of current point with each line segment
+		two point form of line: y-y1 = (y2-y1)/(x2-x1) * (x-x1)'''
+		x1 = s.plx
+		y1 = s.ply
+		x2 = s.prx
+		y2 = s.pry
+		y_on_s = y1 + ((y2-y1)/(x2-x1)) * (x-x1)
 
-		p_top = Point(x, y + dist_top)
-		p_top.set_idx(len(point))
-		point.append(p_top)
-		s_top = LineSegment(pt, p_top)
-		s_top.set_idx(pt.idx, p_top.idx)
-		segv.append(s_top)
-		p_bot = Point(x, y - dist_bot)
-		p_bot.set_idx(len(point))
-		point.append(p_bot)
-		s_bot = LineSegment(p_bot, pt)
-		s_bot.set_idx(pt.idx, p_bot.idx)
-		segv.append(s_bot)
-		print(p_top, p_bot)
+		if y_on_s > y and abs(y_on_s - y) < dist_top and x1 < x < x2:
+			dist_top = abs(y_on_s - y)
+		elif y_on_s < y and abs(y_on_s - y) < dist_bot and x1 < x < x2:
+			dist_bot = abs(y_on_s - y)
 
-# Algorithm RANDOMPERMUTATION(A)
-# Input. An array A[1···n].
-# Output. The array A[1···n] with the same elements, but rearranged into a random permutation.
-# 1. for k ← n downto 2
-# 2. 	do rndindex ←RANDOM(k)
-# 3. 	Exchange A[k] and A[rndindex].
+	p_top = Point(x, y + dist_top)
+	p_top.set_idx(len(point))
+	point.append(p_top)
+	s_top = LineSegment(pt, p_top)
+	s_top.set_idx(pt.idx, p_top.idx)
+	segv.append(s_top)
+	p_bot = Point(x, y - dist_bot)
+	p_bot.set_idx(len(point))
+	point.append(p_bot)
+	s_bot = LineSegment(p_bot, pt)
+	s_bot.set_idx(pt.idx, p_bot.idx)
+	segv.append(s_bot)
+		
+'''
+Algorithm RANDOMPERMUTATION(A)
+Input. An array A[1···n].
+Output. The array A[1···n] with the same elements, but rearranged into a random permutation.
+1. for k ← n downto 2
+2. 	do rndindex ←RANDOM(k)
+3. 	Exchange A[k] and A[rndindex].
+'''
 def randomize_line_segment(seg):
 	rand_segment[:] = seg[::]
 	for i in range(len(seg)-1, 1, -1):
