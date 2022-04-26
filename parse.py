@@ -110,7 +110,7 @@ def rm_dup_line_segment(seg):
 
 def sort_line_segment(seg):
 	# segment.sort(key = lambda x: (x.plx, x.ply, x.prx, x.pry))
-	segment.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
+	seg.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
 
 def read_vertex(line):
 	idx = re.search('v(.+?) ', line).group(1)
