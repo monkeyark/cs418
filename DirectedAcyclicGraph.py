@@ -21,11 +21,13 @@
 # 7. else Let ∆j+1 be the upper right neighbor of ∆j.
 # 8. j ← j +1
 # 9. return ∆0,∆1,...,∆j
+from copy import copy, deepcopy
+from collections import OrderedDict
+
 class Node:
 	def __init__(self):
 		pass
 
-from collections import OrderedDict
 class DirectedAcyclicGraph:
 	def __init__(self):
 		self.graph = OrderedDict()
@@ -37,6 +39,12 @@ class DirectedAcyclicGraph:
 			raise KeyError('node %s already exists' % node_name)
 		graph[node_name] = set()
 
+	def add_node_if_not_exists(self, node_name, graph=None):
+		try:
+			self.add_node(node_name, graph=graph)
+		except KeyError:
+			pass
+
 	def delete_node(self, node_name, graph=None):
 		if not graph:
 			graph = self.graph
@@ -47,3 +55,18 @@ class DirectedAcyclicGraph:
 		for node, edges in graph.items:
 			if node_name in edges:
 				edges.remove(node_name)
+
+	def rename_edges(self, old_task_name, new_task_name, graph=None):
+		""" Change references to a task in existing edges. """
+		if not graph:
+			graph = self.graph
+		for node, edges in graph.items():
+
+			if node == old_task_name:
+				graph[new_task_name] = copy(edges)
+				del graph[old_task_name]
+
+			else:
+				if old_task_name in edges:
+					edges.remove(old_task_name)
+					edges.add(new_task_name)
