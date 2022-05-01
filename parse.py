@@ -186,10 +186,14 @@ def bounding_box(seg):
 	botl.set_idx(-4)
 	# bounding line segments
 	boundT = LineSegment(topl, topr)
+	boundT.set_idx(topl.idx, topr.idx)
 	boundR = LineSegment(botr, topr)
+	boundR.set_idx(botr.idx, topr.idx)
 	boundB = LineSegment(botl, botr)
+	boundB.set_idx(botl.idx, botr.idx)
 	boundL = LineSegment(botl, topl)
+	boundL.set_idx(botl.idx, topl.idx)
 	# add bounding line segments to box
-	seg[len(seg):] = [boundB, boundL, boundT, boundR]
+	seg[len(seg):] = [boundT, boundB, boundL, boundR]
 	# sort_line_segment(seg)
 

@@ -9,26 +9,63 @@
 # 6. Remove the leaves for ∆0,∆1,...,∆k from D, and create leaves for the new trapezoids. Link the new leaves to the existing inner nodes by adding some new inner nodes, as explained below.
 
 
-# Algorithm FOLLOWSEGMENT(T,D,si)
-# Input. A trapezoidal map T, a search structure D for T, and a new segment si.
-# Output. The sequence ∆0,...,∆k of trapezoids intersected by si.
-# 1. Let p and q be the left and right endpoint of si.
-# 2. Search with p in the search structure D to find ∆0.
-# 3. j ← 0;
-# 4. while q lies to the right of rightp(∆j)
-# 5. do if rightp(∆j) lies above si
-# 6. then Let ∆j+1 be the lower right neighbor of ∆j.
-# 7. else Let ∆j+1 be the upper right neighbor of ∆j.
-# 8. j ← j +1
-# 9. return ∆0,∆1,...,∆j
 from copy import copy, deepcopy
 from collections import OrderedDict
 
+from TrapezoidalMap import Point, LineSegment, Trapezoid
+import networkx as nx
+
 class Node:
-	def __init__(self):
+	def __init__(self, parent = None, lchild = None, rchild = None):
+		self.parent = parent
+		self.lchild = lchild
+		self.rchild = rchild
 		pass
 
-class DirectedAcyclicGraph:
+class XNode(Node):
+	def __init__(self, parent = None, lchild = None, rchild = None):
+		super().__init__(self, parent, rchild, lchild)
+		self.type = 'p'
+	pass
+
+class YNode(Node):
+	pass
+
+
+class Graph(nx.DiGraph):
+	def __init__(self):
+		super.__init__(self)
+
+	def find_point(graph:nx.DiGraph, pt:Point):
+		#TODO find the trapezoid in the current graph
+		n = [n for n,d in graph.in_degree() if d==0]
+		node = n[0]
+		while isinstance(node, Trapezoid) == False:
+			if isinstance(node, Point):
+				if pt.is_letf_of(node):
+					#go to left child
+					node = node.left
+					pass
+				elif pt.is_right_of(node):
+					#go to right child
+					node = node.right
+					pass
+				else:
+					print(pt, node, ' has same x-value')
+					#TODO
+			elif isinstance(node, LineSegment):
+				if node.is_below(pt):
+					node = node.left
+					pass
+				elif node.is_above(pt):
+					node = node.right
+					pass
+				else:
+					print(pt, ' lies on ', node)
+		# the return should be a Trapezoid type
+		return node
+
+class DAG:
 	def __init__(self):
 		self.graph = OrderedDict()
 
@@ -45,7 +82,7 @@ class DirectedAcyclicGraph:
 		except KeyError:
 			pass
 
-	def delete_node(self, node_name, graph=None):
+	def remove_node(self, node_name, graph=None):
 		if not graph:
 			graph = self.graph
 		if node_name not in graph:
