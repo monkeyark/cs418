@@ -1,4 +1,13 @@
 class Point:
+	pass
+class LineSegment:
+	pass
+class Trapezoid:
+	pass
+class TrapezoidMap:
+	pass
+
+class Point:
 	def __init__(self, x, y):
 		self.x = float(x)
 		self.y = float(y)
@@ -23,6 +32,12 @@ class Point:
 			return self.x == other.x and self.y == other.y
 		return False
 
+	def is_left(self, other:Point):
+		return other.x < self.x
+
+	def is_right(self, other:Point):
+		return self.x < other.x
+		
 	def set_idx(self, idx):
 		self.idx = idx
 
@@ -44,6 +59,10 @@ class LineSegment:
 		self.prx = pr.x
 		self.pry = pr.y
 		self.idx = None
+		self.parent = None
+
+	def set_parent(self, p:LineSegment):
+		self.parent = p
 
 	def set_idx(self, sidx, eidx):
 		if sidx < eidx:
@@ -53,6 +72,14 @@ class LineSegment:
 
 	def print_endpoints(self):
 		return str(self.pl) + ' ' + str(self.pr)
+
+	def is_above(self, pt:Point):
+		y_on_s = Geometry.y_on_line_segment(self, pt.x)
+		return y_on_s < pt.y
+
+	def is_below(self, pt:Point):
+		y_on_s = Geometry.y_on_line_segment(self, pt.x)
+		return pt.y < y_on_s
 
 	def __str__(self):
 		return 's' + self.idx
@@ -74,6 +101,14 @@ class Trapezoid:
 		self.tr = top.pr
 		self.bl = bot.pl
 		self.br = bot.pr
+		# Neighbors of this trapezoid
+		self.nbrUL = None
+		self.nbrUR = None
+		self.nbrLL = None
+		self.nbrLR = None
+
+	def set_lower_left_neighbor(self, nbr:Trapezoid):
+		self.nbrLL = nbr
 
 	def __str__(self):
 		return 't ' + str(self.top) + 'b ' + str(self.bot)
@@ -85,47 +120,43 @@ class Trapezoid:
 	def __hash__(self):
 		return hash(('top', self.top, 'bot ', self.bot, 'right ', self.right, 'left ', self.left))
 
-	def is_inside(self, pt:Point):
+
+class Geometry:
+	'''find intersection of vertical line of current point with each line segment
+	two point form of line: y-y1 = (y2-y1)/(x2-x1) * (x-x1)'''
+	def y_on_line_segment(s:LineSegment, x):
+		x1 = s.plx
+		y1 = s.ply
+		x2 = s.prx
+		y2 = s.pry
+		y = y1 + ((y2-y1)/(x2-x1)) * (x-x1)
+		return y
+	
+	def sine_theata(stt:Point, end:Point, pt:Point):
+		ax = end.x - stt.x
+		ay = end.y - stt.y
+		bx = pt.x - stt.x
+		by = pt.y - stt.y
+		sine = ax * by - ay * bx
+		return sine
+
+	def is_inside_trapezoid(trap:Trapezoid, pt:Point):
 		is_inside = True
-		on_side = None
 
-		ax = self.top.prx - self.top.plx
-		ay = self.top.pry - self.top.ply
-		bx = pt.x - self.top.plx
-		by = pt.y - self.top.ply
-		sine = ax * by - ay * bx
-		is_inside = is_inside and (sine <= 0)
-		if (sine == 0):
-			on_side = 't'
+		sine = Geometry.sine_theata(trap.tl, trap.tr, pt)	#top
+		is_inside = is_inside and sine <= 0
 		print(is_inside, sine)
 
-		ax = self.bot.plx - self.bot.prx
-		ay = self.bot.ply - self.bot.pry
-		bx = pt.x - self.bot.prx
-		by = pt.y - self.bot.pry
-		sine = ax * by - ay * bx
-		is_inside = is_inside and (sine <= 0)
+		sine = Geometry.sine_theata(trap.br, trap.bl, pt)	#bot
+		is_inside = is_inside and sine <= 0
 		print(is_inside, sine)
 
-		ax = self.left.prx - self.left.plx
-		ay = self.left.pry - self.left.ply
-		bx = pt.x - self.left.plx
-		by = pt.y - self.left.ply
-		sine = ax * by - ay * bx
-		is_inside = is_inside and (sine <= 0)
+		sine = Geometry.sine_theata(trap.bl, trap.tl, pt)	#left
+		is_inside = is_inside and sine <= 0
 		print(is_inside, sine)
 
-		ax = self.right.plx - self.right.prx
-		ay = self.right.ply - self.right.pry
-		bx = pt.x - self.right.prx
-		by = pt.y - self.right.pry
-		sine = ax * by - ay * bx
-		is_inside = is_inside and (sine <= 0)
+		sine = Geometry.sine_theata(trap.tr, trap.br, pt)	#right
+		is_inside = is_inside and sine <= 0
 		print(is_inside, sine)
 
 		return is_inside
-
-
-class TrapezoidMap:
-	pass
-

@@ -1,6 +1,6 @@
 import re
 from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
-from TrapezoidalMap import Point, LineSegment
+from TrapezoidalMap import Point, LineSegment, Geometry
 from operator import attrgetter
 import random
 
@@ -59,6 +59,7 @@ def vertical_segment(pt, seg, segv):
 	dist_bot = abs(bound_box[3].ply - y)	#distance to bot
 	for s in seg:
 		if s.plx - s.prx == 0: continue	#handle vertical line
+		# y_on_s = Geometry.y_on_line_segment(s, x)
 		'''find intersection of vertical line of current point with each line segment
 		two point form of line: y-y1 = (y2-y1)/(x2-x1) * (x-x1)'''
 		x1 = s.plx
@@ -172,7 +173,7 @@ def bounding_box(seg):
 	max_x = max(vertex_x)
 	min_y = min(vertex_y)
 	max_y = max(vertex_y)
-	offset = 0.1
+	offset = 0
 	offset_x = (max_x - min_x) * offset
 	offset_y = (max_y - min_y) * offset
 	topl = Point(min_x-offset_x, max_y+offset_y)
