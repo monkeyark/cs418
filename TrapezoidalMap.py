@@ -64,13 +64,19 @@ class LineSegment:
 		return hash(('left endpoint', self.pl, 'right endpoint', self.pr))
 
 
-
 class Trapezoid:
-	def __init__(self, top:LineSegment, bot:LineSegment, right:LineSegment, left:LineSegment):
+	def __init__(self, top:LineSegment, bot:LineSegment, left:LineSegment, right:LineSegment):
 		self.top = top
 		self.bot = bot
 		self.right = right
 		self.left = left
+		self.tl = top.pl
+		self.tr = top.pr
+		self.bl = bot.pl
+		self.br = bot.pr
+
+	def __str__(self):
+		return 't ' + str(self.top) + 'b ' + str(self.bot)
 
 	def __eq__(self, other):
 		return self.top == other.top and self.bot == other.bot and \
@@ -78,6 +84,46 @@ class Trapezoid:
 
 	def __hash__(self):
 		return hash(('top', self.top, 'bot ', self.bot, 'right ', self.right, 'left ', self.left))
+
+	def is_inside(self, pt:Point):
+		is_inside = True
+		on_side = None
+
+		ax = self.top.prx - self.top.plx
+		ay = self.top.pry - self.top.ply
+		bx = pt.x - self.top.plx
+		by = pt.y - self.top.ply
+		sine = ax * by - ay * bx
+		is_inside = is_inside and (sine <= 0)
+		if (sine == 0):
+			on_side = 't'
+		print(is_inside, sine)
+
+		ax = self.bot.plx - self.bot.prx
+		ay = self.bot.ply - self.bot.pry
+		bx = pt.x - self.bot.prx
+		by = pt.y - self.bot.pry
+		sine = ax * by - ay * bx
+		is_inside = is_inside and (sine <= 0)
+		print(is_inside, sine)
+
+		ax = self.left.prx - self.left.plx
+		ay = self.left.pry - self.left.ply
+		bx = pt.x - self.left.plx
+		by = pt.y - self.left.ply
+		sine = ax * by - ay * bx
+		is_inside = is_inside and (sine <= 0)
+		print(is_inside, sine)
+
+		ax = self.right.plx - self.right.prx
+		ay = self.right.ply - self.right.pry
+		bx = pt.x - self.right.prx
+		by = pt.y - self.right.pry
+		sine = ax * by - ay * bx
+		is_inside = is_inside and (sine <= 0)
+		print(is_inside, sine)
+
+		return is_inside
 
 
 class TrapezoidMap:
