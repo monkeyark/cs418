@@ -14,6 +14,12 @@ class Vertex:
 		self.idx = int(idx)
 		self.edge = edge
 
+	def is_letf_of(self, pt:Vertex):
+		return self.x < pt.x
+
+	def is_right_of(self, pt:Vertex):
+		return self.x > pt.x
+
 	def equals(self, other):
 		return isinstance(other, Vertex) and self.x == other.x and self.y == other.y
 
@@ -25,7 +31,9 @@ class Vertex:
 		return hash(('v', self.idx, 'x', self.x, 'y', self.y))
 
 	def __str__(self):
-		return 'v' + str(self.idx) + ' (' + str(self.x) + ', ' + str(self.y) + ')' + ' e'
+		# return 'v' + str(self.idx) + ' (' + str(self.x) + ', ' + str(self.y) + ')'
+		return 'v' + str(self.idx) + ' (' + "{:.1f}".format(self.x) + ', ' + "{:.1f}".format(self.y) + ')'
+
 
 class Face:
 	def __init__(self, idx, edgeout:HalfEdge=None, edgein:HalfEdge=None):
@@ -44,7 +52,7 @@ class Face:
 		return 'f' + str(self.idx)
 
 class HalfEdge:
-	def __init__(self, vs:Vertex, ve:Vertex, face:Face=None, next:HalfEdge=None, prev:HalfEdge=None, twin=None):
+	def __init__(self, vs:Vertex, ve:Vertex, face=None, next:HalfEdge=None, prev:HalfEdge=None, twin=None):
 		self.vs = vs
 		self.ve = ve
 		self.idx = str(vs.idx) + ',' + str(ve.idx)
@@ -63,40 +71,44 @@ class HalfEdge:
 		self.prev = prev
 		self.twin = twin
 	
-	def twin_edge(self):
-		twin = HalfEdge(self.ve, self.vs)
-		twin.idx = str(self.ve.idx) + ',' + str(self.ve.idx)
-		twin.vsx = self.ve.x
-		twin.vsy = self.ve.y
-		twin.vex = self.vs.x
-		twin.vey = self.vs.y
-		twin.prx = self.pl.x
-		twin.pry = self.pl.y
-		twin.plx = self.pr.x
-		twin.ply = self.pr.y
-		twin.pl = self.right_vtx()
-		twin.pr = self.left_vtx()
-		twin.next = self.prev
-		twin.prev = self.next
-		twin.twin = self
-		return twin
+	def set_twin(self, twin:HalfEdge):
+		self.twin = twin
+
+	# def left_vtx(self):
+	# 	vtx = Vertex(self.vex, self.vey, self.ve.idx)
+	# 	if self.vsx < self.vex:
+	# 		vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+	# 	elif self.vsx == self.vex:
+	# 		if self.vsy <= self.vey:
+	# 			vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+	# 	return vtx
+		
+	# def right_vtx(self):
+	# 	vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+	# 	# vtx = Vertex(self.vex, self.vey, self.ve.idx)
+	# 	if self.vsx < self.vex:
+	# 		vtx = Vertex(self.vex, self.vey, self.ve.idx)
+	# 	elif self.vsx == self.vex:
+	# 		if self.vsy <= self.vey:
+	# 			vtx = Vertex(self.vex, self.vey, self.ve.idx)
+	# 	return vtx
 
 	def left_vtx(self):
-		vtx = Vertex(self.vex, self.vey, self.vs.idx)
+		vtx = self.ve
 		if self.vsx < self.vex:
-			vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+			vtx = self.vs
 		elif self.vsx == self.vex:
 			if self.vsy <= self.vey:
-				vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+				self.vs
 		return vtx
 		
 	def right_vtx(self):
-		vtx = Vertex(self.vsx, self.vsy, self.vs.idx)
+		vtx = self.vs
 		if self.vsx < self.vex:
-			vtx = Vertex(self.vex, self.vey, self.vs.idx)
+			vtx = self.ve
 		elif self.vsx == self.vex:
 			if self.vsy <= self.vey:
-				vtx = Vertex(self.vex, self.vey, self.vs.idx)
+				vtx = self.ve
 		return vtx
 
 	def intersect(self, pt:Vertex):
@@ -109,11 +121,11 @@ class HalfEdge:
 		return y
 
 	def is_above(self, pt:Vertex):
-		y_on_s = self.intersect(self, pt)
+		y_on_s = self.intersect(pt)
 		return y_on_s < pt.y
 
 	def is_below(self, pt:Vertex):
-		y_on_s = self.intersect(self, pt)
+		y_on_s = self.intersect(pt)
 		return pt.y < y_on_s
 
 	def is_twin(self, other):
@@ -126,19 +138,19 @@ class HalfEdge:
 		return hash(('start vertx', self.vs, 'end vertex', self.ve, 'index', self.idx))
 
 	def __str__(self):
-		return 'e' + str(self.vs.idx) + ',' + str(self.ve.idx)
+		# return 'e' + str(self.vs.idx) + ',' + str(self.ve.idx)
+		return 'e' + self.idx
 
 class Trapezoid:
 	def __init__(self, 
-				top:HalfEdge, bot:HalfEdge, 
-				leftp:Vertex, rightp:Vertex,
+				top:HalfEdge, bot:HalfEdge, leftp:Vertex, rightp:Vertex,
 				nbUL = None, nbUR = None, nbLL = None, nbLR = None,
 				**kwargs
 				):
 		self.top = top
 		self.bot = bot
-		self.rightp = rightp
 		self.leftp = leftp
+		self.rightp = rightp
 		# Neighbors of this trapezoid
 		self.nbUL = nbUL
 		self.nbUR = nbUR
@@ -147,12 +159,18 @@ class Trapezoid:
 
 	def set_lower_left_neighbor(self, nbr:Trapezoid):
 		self.nbrLL = nbr
-	def set_upper_left_neighbor(self, nbr:Trapezoid):
-		self.nbrUL = nbr
 	def set_lower_right_neighbor(self, nbr:Trapezoid):
 		self.nbrLR = nbr
+	def set_upper_left_neighbor(self, nbr:Trapezoid):
+		self.nbrUL = nbr
 	def set_upper_right_neighbor(self, nbr:Trapezoid):
 		self.nbrUR = nbr
+	def is_zero_width(self):
+		return self.leftp.x == self.rightp.x
+	def is_zero_height_left(self):
+		return self.top.ply == self.bot.ply
+	def is_zero_height_right(self):
+		return self.top.pry == self.bot.pry
 
 	def __eq__(self, other):
 		return isinstance(other, Trapezoid) and self.top == other.top and self.bot == other.bot and \
@@ -162,7 +180,7 @@ class Trapezoid:
 		return hash(('top', self.top, 'bot ', self.bot, 'rightp ', self.rightp, 'leftp ', self.leftp))
 	
 	def __str__(self):
-		return 't ' + str(self.top) + '\nb ' + str(self.bot)
+		return '(t: ' + str(self.top) + ', ' + 'b: ' + str(self.bot) + ')\n' + '(l: v' + str(self.leftp.idx) + ', ' + 'r: v' + str(self.rightp.idx) + ')'
 
 class Geometry:
 	'''find intersection of vertical line of current point with each line segment
@@ -211,3 +229,56 @@ class Geometry:
 		print(is_inside, sine)
 
 		return is_inside
+
+class Node:
+	pass
+class Graph:
+	pass
+
+class Node:
+	def __init__(self, parent=None, left=None, right=None, data=None):
+		self.parent = parent
+		self.left = left
+		self.right = right
+		self.data = data
+		self.path = list()
+	
+	def set_parent(self, parent:Node):
+		self.parent = parent
+		self.path.append(parent)
+	
+	def set_children(self, l:Node, r:Node):
+		self.left = l
+		self.right = r
+		l.set_parent(self)
+		r.set_parent(self)
+
+	def set_left_child(self, l:Node):
+		self.left = l
+		l.set_parent(self)
+
+	def set_right_child(self, r:Node):
+		self.right = r
+		r.set_parent(self)
+
+	def add_to_path(self, node:Node):
+		self.path.append(node)
+
+	def set_data(self, data):
+		self.data = data
+
+	def __eq__(self, other):
+		return isinstance(other, Node) and self.data == other.data
+
+	def __hash__(self):
+		return hash(('parent', self.parent, 'left', self.left, 'right', self.right, 'data', self.data))
+
+	def __str__(self):
+		# if isinstance(self.data, Trapezoid):
+		# 	return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+		# else:
+		# 	return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+		return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+			# return 'node:\n' + str(self.data) + '\n' + 'lchild ' + str(self.left) + ' rchild ' + str(self.right) + '\n'
+
+		# return 'node:\n' + str(self.data) + '\n' + 'lchild ' + str(self.left) + ' rchild ' + str(self.right) + '\n'

@@ -10,69 +10,98 @@
 
 
 from copy import copy, deepcopy
-from collections import OrderedDict
 
 from DoublyConnectedEdgeList import Vertex, Face, HalfEdge, Trapezoid
 import networkx as nx
 
 class Node:
-	def __init__(self, parent = None, left = None, right = None, data = None):
+	pass
+class Graph:
+	pass
+
+class Node:
+	def __init__(self, parent=None, left=None, right=None, data=None):
 		self.parent = parent
 		self.left = left
 		self.right = right
 		self.data = data
 		self.path = list()
-		pass
-
-	def add_parent_(self, parent):
+	
+	def set_parent(self, parent:Node):
+		self.parent = parent
 		self.path.append(parent)
+	
+	def set_children(self, l:Node, r:Node):
+		self.left = l
+		self.right = r
+		l.set_parent(self)
+		r.set_parent(self)
 
-	def set_left_child(self, child):
-		pass
+	def set_left_child(self, l:Node):
+		self.left = l
+		l.set_parent(self)
 
-class XNode(Node):
-	def __init__(self, parent = None, lchild = None, rchild = None):
-		super().__init__(self, parent, rchild, lchild)
-		self.type = 'p'
-	pass
+	def set_right_child(self, r:Node):
+		self.right = r
+		r.set_parent(self)
 
-class YNode(Node):
-	pass
+	def add_to_path(self, node:Node):
+		self.path.append(node)
+
+	def set_data(self, data):
+		self.data = data
+
+	def __eq__(self, other):
+		return isinstance(other, Node) and self.data == other.data
+
+	def __hash__(self):
+		return hash(('parent', self.parent, 'left', self.left, 'right', self.right, 'data', self.data))
+
+	def __str__(self):
+		# if isinstance(self.data, Trapezoid):
+		# 	return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+		# else:
+		# 	return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+		return 'node: ' + str(type(self.data)) + '\n' + str(self.data)
+			# return 'node:\n' + str(self.data) + '\n' + 'lchild ' + str(self.left) + ' rchild ' + str(self.right) + '\n'
+
+		# return 'node:\n' + str(self.data) + '\n' + 'lchild ' + str(self.left) + ' rchild ' + str(self.right) + '\n'
 
 
-class Graph(nx.DiGraph):
-	def __init__(self):
-		super.__init__(self)
+# class Graph(nx.DiGraph):
+# 	def __init__(self):
+# 		super.__init__(self)
 
-	def find_point(graph:nx.DiGraph, pt:Vertex):
-		#TODO find the trapezoid in the current graph
-		n = [n for n,d in graph.in_degree() if d==0]
-		node = n[0]
-		while isinstance(node, Trapezoid) == False:
-			if isinstance(node, Vertex):
-				if pt.is_letf_of(node):
-					#go to left child
-					node = node.left
-					pass
-				elif pt.is_right_of(node):
-					#go to right child
-					node = node.right
-					pass
-				else:
-					print(pt, node, ' has same x-value')
-					#TODO
-			elif isinstance(node, HalfEdge):
-				if node.is_below(pt):
-					node = node.left
-					pass
-				elif node.is_above(pt):
-					node = node.right
-					pass
-				else:
-					print(pt, ' lies on ', node)
-		# the return should be a Trapezoid type
-		return node
+# 	def find_point(graph:nx.DiGraph, pt:Vertex):
+# 		#TODO find the trapezoid in the current graph
+# 		n = [n for n,d in graph.in_degree() if d==0]
+# 		node = n[0]
+# 		while isinstance(node, Trapezoid) == False:
+# 			if isinstance(node, Vertex):
+# 				if pt.is_letf_of(node):
+# 					#go to left child
+# 					node = node.left
+# 					pass
+# 				elif pt.is_right_of(node):
+# 					#go to right child
+# 					node = node.right
+# 					pass
+# 				else:
+# 					print(pt, node, ' has same x-value')
+# 					#TODO
+# 			elif isinstance(node, HalfEdge):
+# 				if node.is_below(pt):
+# 					node = node.left
+# 					pass
+# 				elif node.is_above(pt):
+# 					node = node.right
+# 					pass
+# 				else:
+# 					print(pt, ' lies on ', node)
+# 		# the return should be a Trapezoid type
+# 		return node
 
+from collections import OrderedDict
 class DAG:
 	def __init__(self):
 		self.graph = OrderedDict()

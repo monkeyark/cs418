@@ -1,6 +1,6 @@
+from DoublyConnectedEdgeList import Vertex, Face, HalfEdge, Trapezoid
+from DirectedAcyclicGraph import Node, Graph
 import re
-from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
-# from TrapezoidalMap import Point, LineSegment, Geometry
 from operator import attrgetter
 import random
 from copy import copy, deepcopy
@@ -26,17 +26,18 @@ def read_file(inputFile):
 	input = file.readlines()
 	file.close()
 	parse_subdivision(input)
-	segment[:] = rm_twin_halfedge(halfedge)
+	segment[:] = find_twin_halfedge(halfedge)
 	vertex_coord(vertex)
 	# segment_halfedge_dict(seg_edg_dict)
 	# rm_dup_line_segment(segment)
 	sort_line_segment(segment)
-	randomize_line_segment(segment)
+	rand_segment[:] = randomize_line_segment(segment)
 	bounding_box(bound_box)
 	find_vertical_segment(vertex, segment, vert_segment)
 	point_coord(point)
 
-
+def face_to_edge(face, edg):
+	pass
 
 '''find x,y coordinates of vertex for ploting'''
 def vertex_coord(vtx):
@@ -95,10 +96,11 @@ Output. The array A[1···n] with the same elements, but rearranged into a rand
 3. 	Exchange A[k] and A[rndindex].
 '''
 def randomize_line_segment(seg):
-	rand_segment[:] = seg[::]
+	rand_seg = seg[::]
 	for i in range(len(seg)-1, 1, -1):
 		rndIdx = random.randint(0, i)
-		rand_segment[i], rand_segment[rndIdx] = rand_segment[rndIdx], rand_segment[i]
+		rand_seg[i], rand_seg[rndIdx] = rand_seg[rndIdx], rand_seg[i]
+	return rand_seg
 
 def rm_dup_line_segment(seg):
 	seen = set()
@@ -114,11 +116,13 @@ def sort_line_segment(seg):
 	seg.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
 
 '''remove twin of all halfedge'''
-def rm_twin_halfedge(edg):
+def find_twin_halfedge(edg):
 	tem = deepcopy(edg)
 	for i in range(0, len(edg)):
 		for j in range(i+1, len(edg)):
 			if edg[i].is_twin(edg[j]):
+				edg[i].set_twin(edg[j])
+				edg[j].set_twin(edg[i])
 				tem.remove(edg[j])
 	return tem
 
@@ -143,7 +147,7 @@ def read_halfedge(line):
 	vs = vertex[int(vsi)-1]
 	ve = vertex[int(vei)-1]
 	f = face[int(fi)-1]
-	e = HalfEdge(vs, ve, f)
+	e = HalfEdge(vs, ve, face=f)
 	return e
 
 def parse_subdivision(input):
@@ -159,7 +163,7 @@ def parse_subdivision(input):
 			e = read_halfedge(line)
 			halfedge.append(e)
 
-def bounding_box(seg):
+def bounding_box(box):
 	# bounding points
 	min_x = min(vertex_x)
 	max_x = max(vertex_x)
@@ -178,9 +182,12 @@ def bounding_box(seg):
 	boundB = HalfEdge(botr, botl)
 	boundL = HalfEdge(botl, topl)
 	# add bounding line segments to box
-	seg[len(seg):] = [boundT, boundB, boundL, boundR]
+	box[:] = [boundT, boundB, boundL, boundR]
 	# sort_line_segment(seg)
-
+	global root
+	print(boundT.pl, boundB.pr)
+	root_data = Trapezoid(boundT, boundB, boundT.pl, boundB.pr)
+	root = Node(data=root_data)
 
 
 '''Append multiple values to a key in the given dictionary'''
