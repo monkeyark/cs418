@@ -1,18 +1,19 @@
 import re
 from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
-from TrapezoidalMap import Point, LineSegment, Geometry
+# from TrapezoidalMap import Point, LineSegment, Geometry
 from operator import attrgetter
 import random
+from copy import copy, deepcopy
 
 vertex = []
-point = []
 face = []
 halfedge = []
+segment = []
+point = []
 vertex_x = []
 vertex_y = []
 point_x = []
 point_y = []
-segment = []
 rand_segment = []
 vert_segment = []
 bound_box = []
@@ -25,21 +26,24 @@ def read_file(inputFile):
 	input = file.readlines()
 	file.close()
 	parse_subdivision(input)
+	segment[:] = rm_twin_halfedge(halfedge)
 	vertex_coord(vertex)
-	segment_halfedge_dict(seg_edg_dict)
-	rm_dup_line_segment(segment)
+	# segment_halfedge_dict(seg_edg_dict)
+	# rm_dup_line_segment(segment)
 	sort_line_segment(segment)
 	randomize_line_segment(segment)
 	bounding_box(bound_box)
 	find_vertical_segment(vertex, segment, vert_segment)
 	point_coord(point)
 
+
+
 '''find x,y coordinates of vertex for ploting'''
 def vertex_coord(vtx):
 	for v in vtx:
 		vertex_x.append(float(v.x))
 		vertex_y.append(float(v.y))
-		point.append(v.to_point())
+		point.append(v)
 
 def point_coord(pt):
 	pt[:] = pt[len(vertex):]
@@ -49,8 +53,7 @@ def point_coord(pt):
 
 def find_vertical_segment(vtx, seg, segv):
 	for v in vtx:
-		pt = v.to_point()
-		vertical_segment(pt, seg, segv)
+		vertical_segment(v, seg, segv)
 
 def vertical_segment(pt, seg, segv):
 	x = pt.x
@@ -73,17 +76,14 @@ def vertical_segment(pt, seg, segv):
 		elif y_on_s < y and abs(y_on_s - y) < dist_bot and x1 < x < x2:
 			dist_bot = abs(y_on_s - y)
 
-	p_top = Point(x, y + dist_top)
-	p_top.set_idx(len(point))
+	p_top = Vertex(x, y + dist_top, idx=len(point))
 	point.append(p_top)
-	s_top = LineSegment(pt, p_top)
-	s_top.set_idx(pt.idx, p_top.idx)
+	s_top = HalfEdge(pt, p_top)
 	segv.append(s_top)
-	p_bot = Point(x, y - dist_bot)
-	p_bot.set_idx(len(point))
+
+	p_bot = Vertex(x, y - dist_bot, idx=len(point))
 	point.append(p_bot)
-	s_bot = LineSegment(p_bot, pt)
-	s_bot.set_idx(pt.idx, p_bot.idx)
+	s_bot = HalfEdge(p_bot, pt)
 	segv.append(s_bot)
 		
 '''
@@ -113,14 +113,22 @@ def sort_line_segment(seg):
 	# segment.sort(key = lambda x: (x.plx, x.ply, x.prx, x.pry))
 	seg.sort(key = attrgetter('plx', 'ply', 'prx', 'pry'))
 
+'''remove twin of all halfedge'''
+def rm_twin_halfedge(edg):
+	tem = deepcopy(edg)
+	for i in range(0, len(edg)):
+		for j in range(i+1, len(edg)):
+			if edg[i].is_twin(edg[j]):
+				tem.remove(edg[j])
+	return tem
+
 def read_vertex(line):
-	idx = re.search('v(.+?) ', line).group(1)
+	index = re.search('v(.+?) ', line).group(1)
 	x = re.search(' \((.+?),', line).group(1)
 	y = re.search(', (.+?)\)', line).group(1)
 	es = re.search(' e(.+?),', line).group(1)
 	ee = re.search('e\d,(.+?)\n', line).group(1)
-	v = Vertex(idx, x, y)
-	# vertex.append(v)
+	v = Vertex(x, y, idx=index)
 	return v
 
 def read_face(line):
@@ -136,7 +144,6 @@ def read_halfedge(line):
 	ve = vertex[int(vei)-1]
 	f = face[int(fi)-1]
 	e = HalfEdge(vs, ve, f)
-	# halfedge.append(e)
 	return e
 
 def parse_subdivision(input):
@@ -152,6 +159,30 @@ def parse_subdivision(input):
 			e = read_halfedge(line)
 			halfedge.append(e)
 
+def bounding_box(seg):
+	# bounding points
+	min_x = min(vertex_x)
+	max_x = max(vertex_x)
+	min_y = min(vertex_y)
+	max_y = max(vertex_y)
+	offset = 0.2
+	offset_x = (max_x - min_x) * offset
+	offset_y = (max_y - min_y) * offset
+	topl = Vertex(min_x-offset_x, max_y+offset_y, idx=-1)
+	topr = Vertex(max_x+offset_x, max_y+offset_y, idx=-2)
+	botr = Vertex(max_x+offset_x, min_y-offset_y, idx=-3)
+	botl = Vertex(min_x-offset_x, min_y-offset_y, idx=-4)
+	# bounding line segments
+	boundT = HalfEdge(topl, topr)
+	boundR = HalfEdge(topr, botr)
+	boundB = HalfEdge(botr, botl)
+	boundL = HalfEdge(botl, topl)
+	# add bounding line segments to box
+	seg[len(seg):] = [boundT, boundB, boundL, boundR]
+	# sort_line_segment(seg)
+
+
+
 '''Append multiple values to a key in the given dictionary'''
 def add_values_to_dict(target_dict, key, list_of_values):
 	if key not in target_dict:
@@ -159,41 +190,9 @@ def add_values_to_dict(target_dict, key, list_of_values):
 	target_dict[key].extend(list_of_values)
 	return target_dict
 
-def segment_halfedge_dict(s_e_dict):
-	for edge in halfedge:
-		seg = edge.to_line_segment()
+def segment_halfedge_dict(s_e_dict, seg, edg):
+	for e in edg:
+		seg = e
 		seg_ = seg.__str__()
-		edg_ = edge.__str__()
-		segment.append(seg)	#add element to segemtns list
+		edg_ = e.__str__()
 		add_values_to_dict(s_e_dict, seg_, [edg_])
-
-def bounding_box(seg):
-	# bounding points
-	min_x = min(vertex_x)
-	max_x = max(vertex_x)
-	min_y = min(vertex_y)
-	max_y = max(vertex_y)
-	offset = 0
-	offset_x = (max_x - min_x) * offset
-	offset_y = (max_y - min_y) * offset
-	topl = Point(min_x-offset_x, max_y+offset_y)
-	topl.set_idx(-1)
-	topr = Point(max_x+offset_x, max_y+offset_y)
-	topr.set_idx(-2)
-	botr = Point(max_x+offset_x, min_y-offset_y)
-	botr.set_idx(-3)
-	botl = Point(min_x-offset_x, min_y-offset_y)
-	botl.set_idx(-4)
-	# bounding line segments
-	boundT = LineSegment(topl, topr)
-	boundT.set_idx(topl.idx, topr.idx)
-	boundR = LineSegment(botr, topr)
-	boundR.set_idx(botr.idx, topr.idx)
-	boundB = LineSegment(botl, botr)
-	boundB.set_idx(botl.idx, botr.idx)
-	boundL = LineSegment(botl, topl)
-	boundL.set_idx(botl.idx, topl.idx)
-	# add bounding line segments to box
-	seg[len(seg):] = [boundT, boundB, boundL, boundR]
-	# sort_line_segment(seg)
-

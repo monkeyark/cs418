@@ -1,3 +1,54 @@
+# import networkx as nx
+from DoublyConnectedEdgeList import Vertex, Face, HalfEdge
+from DirectedAcyclicGraph import Graph
+
+class TrapezoidMap:
+	'''
+	Algorithm FOLLOWSEGMENT(T,D,si)
+	Input. A trapezoidal map T, a search structure D for T, and a new segment si.
+	Output. The sequence ∆0,...,∆k of trapezoids intersected by si.
+	1. Let p and q be the left and right endpoint of si.
+	2. Search with p in the search structure D to find ∆0.
+	3. j ← 0;
+	4. while q lies to the right of rightp(∆j)
+	5. 	do if rightp(∆j) lies above si
+	6. 		then Let ∆j+1 be the lower right neighbor of ∆j.
+	7. 		else Let ∆j+1 be the upper right neighbor of ∆j.
+	8. 	j ← j +1
+	9. return ∆0,∆1,...,∆j
+	'''
+	def follow_segment(graph:Graph, seg:HalfEdge):
+		trapezoids = []
+		pt = seg.pl
+		previous = graph.find_point(pt)	#TODO check data type
+		trapezoids.append(previous)
+
+		while seg.prx > previous.leftp.x:
+			# choose the next trapezoid in the sequence
+			if seg.is_above(previous.rightp):	#TODO check condition
+				previous = previous.nbLR	#lower right neighbor
+			else:
+				previous = previous.nbUR	#upper right neighbor
+			trapezoids.append(previous)
+		return trapezoids
+
+
+	'''
+	Algorithm TRAPEZOIDALMAP(S)
+	Input. A set S of n non-crossing line segments.
+	Output. The trapezoidal map T(S) and a search structure D for T(S) in a bounding box.
+	1. Determine a bounding box R that contains all segments of S, and initialize the trapezoidal map structure T and search structure D for it.
+	2. Compute a random permutation s1,s2,...,sn of the elements of S.
+	3. for i ← 1 to n
+	4. 	do Find the set ∆0,∆1,...,∆k of trapezoids in T properly intersected by si.
+	5. 	Remove ∆0,∆1,...,∆k from T and replace them by the new trapezoids that appear because of the insertion of si.
+	6. 	Remove the leaves for ∆0,∆1,...,∆k from D, and create leaves for the new trapezoids. Link the new leaves to the existing inner nodes by adding some new inner nodes, as explained below.
+	'''
+	def build_trapezoid_map(rand_seg, graph, ):
+		pass
+
+
+
 class Point:
 	pass
 class LineSegment:
@@ -8,19 +59,10 @@ class TrapezoidMap:
 	pass
 
 class Point:
-	def __init__(self, x, y):
+	def __init__(self, x, y, idx = None):
 		self.x = float(x)
 		self.y = float(y)
-		self.idx = None
-		
-	# def __init__(self, x, y, idx=None, **kwargs):
-	# 	self.x = float(x)
-	# 	self.y = float(y)
-	# 	if idx:
-	# 		self.idx = idx
-	# 	else:
-	# 		self.idx = None
-	# 	self.update(kwargs)
+		self.idx = idx
 
 	def equals(self, other):
 		if (self.__class__ == other.__class__):
@@ -37,9 +79,6 @@ class Point:
 
 	def is_right_of(self, other:Point):
 		return other.x < self.x
-		
-	def set_idx(self, idx):
-		self.idx = idx
 
 	def __str__(self):
 		return '(' + str(self.x) + ', ' + str(self.y) + ')'
@@ -51,14 +90,14 @@ class Point:
 		return hash(('x', self.x, 'y', self.y))
 
 class LineSegment:
-	def __init__(self, pl:Point, pr:Point):
+	def __init__(self, pl:Point, pr:Point, idx = None):
 		self.pl = pl
 		self.pr = pr
 		self.plx = pl.x
 		self.ply = pl.y
 		self.prx = pr.x
 		self.pry = pr.y
-		self.idx = None
+		self.idx = idx
 		self.parent = None
 
 	def set_parent(self, p:LineSegment):
@@ -111,15 +150,11 @@ class Trapezoid:
 		self.bot = bot
 		self.rightp = rightp
 		self.leftp = leftp
-		self.tl = top.pl
-		self.tr = top.pr
-		self.bl = bot.pl
-		self.br = bot.pr
 		# Neighbors of this trapezoid
-		self.nbUL = kwargs.get('nbUL')
-		self.nbUR = kwargs.get('nbUR')
-		self.nbLL = kwargs.get('nbLL')
-		self.nbLR = kwargs.get('nbLR')
+		self.nbUL = nbUL
+		self.nbUR = nbUR
+		self.nbLL = nbLL
+		self.nbLR = nbLR
 
 	def set_lower_left_neighbor(self, nbr:Trapezoid):
 		self.nbrLL = nbr
@@ -139,55 +174,6 @@ class Trapezoid:
 
 	def __hash__(self):
 		return hash(('top', self.top, 'bot ', self.bot, 'rightp ', self.rightp, 'leftp ', self.leftp))
-
-# import networkx as nx
-from DirectedAcyclicGraph import Graph
-class TrapezoidMap:
-	'''
-	Algorithm FOLLOWSEGMENT(T,D,si)
-	Input. A trapezoidal map T, a search structure D for T, and a new segment si.
-	Output. The sequence ∆0,...,∆k of trapezoids intersected by si.
-	1. Let p and q be the left and right endpoint of si.
-	2. Search with p in the search structure D to find ∆0.
-	3. j ← 0;
-	4. while q lies to the right of rightp(∆j)
-	5. 	do if rightp(∆j) lies above si
-	6. 		then Let ∆j+1 be the lower right neighbor of ∆j.
-	7. 		else Let ∆j+1 be the upper right neighbor of ∆j.
-	8. 	j ← j +1
-	9. return ∆0,∆1,...,∆j
-	'''
-	def follow_segment(graph:Graph, seg:LineSegment):
-		trapezoids = []
-		pt = seg.pl
-		previous = graph.find_point(pt)	#TODO check data type
-		trapezoids.append(previous)
-
-		while seg.prx > previous.leftp.x:
-			# choose the next trapezoid in the sequence
-			if seg.is_above(previous.rightp):	#TODO check condition
-				previous = previous.nbLR	#lower right neighbor
-			else:
-				previous = previous.nbUR	#upper right neighbor
-			trapezoids.append(previous)
-
-		return trapezoids
-
-
-	'''
-	Algorithm TRAPEZOIDALMAP(S)
-	Input. A set S of n non-crossing line segments.
-	Output. The trapezoidal map T(S) and a search structure D for T(S) in a bounding box.
-	1. Determine a bounding box R that contains all segments of S, and initialize the trapezoidal map structure T and search structure D for it.
-	2. Compute a random permutation s1,s2,...,sn of the elements of S.
-	3. for i ← 1 to n
-	4. 	do Find the set ∆0,∆1,...,∆k of trapezoids in T properly intersected by si.
-	5. 	Remove ∆0,∆1,...,∆k from T and replace them by the new trapezoids that appear because of the insertion of si.
-	6. 	Remove the leaves for ∆0,∆1,...,∆k from D, and create leaves for the new trapezoids. Link the new leaves to the existing inner nodes by adding some new inner nodes, as explained below.
-	'''
-	def build_trapezoid_map(rand_seg, graph, ):
-		pass
-
 
 
 class Geometry:

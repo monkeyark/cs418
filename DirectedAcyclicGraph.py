@@ -12,14 +12,22 @@
 from copy import copy, deepcopy
 from collections import OrderedDict
 
-from TrapezoidalMap import Point, LineSegment, Trapezoid
+from DoublyConnectedEdgeList import Vertex, Face, HalfEdge, Trapezoid
 import networkx as nx
 
 class Node:
-	def __init__(self, parent = None, lchild = None, rchild = None):
+	def __init__(self, parent = None, left = None, right = None, data = None):
 		self.parent = parent
-		self.lchild = lchild
-		self.rchild = rchild
+		self.left = left
+		self.right = right
+		self.data = data
+		self.path = list()
+		pass
+
+	def add_parent_(self, parent):
+		self.path.append(parent)
+
+	def set_left_child(self, child):
 		pass
 
 class XNode(Node):
@@ -36,12 +44,12 @@ class Graph(nx.DiGraph):
 	def __init__(self):
 		super.__init__(self)
 
-	def find_point(graph:nx.DiGraph, pt:Point):
+	def find_point(graph:nx.DiGraph, pt:Vertex):
 		#TODO find the trapezoid in the current graph
 		n = [n for n,d in graph.in_degree() if d==0]
 		node = n[0]
 		while isinstance(node, Trapezoid) == False:
-			if isinstance(node, Point):
+			if isinstance(node, Vertex):
 				if pt.is_letf_of(node):
 					#go to left child
 					node = node.left
@@ -53,7 +61,7 @@ class Graph(nx.DiGraph):
 				else:
 					print(pt, node, ' has same x-value')
 					#TODO
-			elif isinstance(node, LineSegment):
+			elif isinstance(node, HalfEdge):
 				if node.is_below(pt):
 					node = node.left
 					pass
