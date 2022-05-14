@@ -130,8 +130,8 @@ def read_vertex(line):
 	index = re.search('v(.+?) ', line).group(1)
 	x = re.search(' \((.+?),', line).group(1)
 	y = re.search(', (.+?)\)', line).group(1)
-	es = re.search(' e(.+?),', line).group(1)
-	ee = re.search('e\d,(.+?)\n', line).group(1)
+	# es = re.search(' e(.+?),', line).group(1)
+	# ee = re.search('e\d,(.+?)\n', line).group(1)
 	v = Vertex(x, y, idx=index)
 	return v
 
